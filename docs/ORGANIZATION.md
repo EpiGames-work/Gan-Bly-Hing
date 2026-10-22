@@ -26,7 +26,7 @@ Create subfolders only when you need them. Ex:
 ## Naming convention
 
 - **Folders**: `lower_snake_case` and plural only e.g. `libs` not `lib`.
-- **Variables:** `lower_snake_case`.
+- **Scripts (sh) and Variables:** `lower_snake_case`.
 - **Files, lib functions & useHooks:** `camelCase`.
 - **Classes, TS types/interfaces, React Nodes/components:** `PascalCase`.
 - **Constants:** `UPPER_SNAKE_CASE`.

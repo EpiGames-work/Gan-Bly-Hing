@@ -5,12 +5,12 @@ Conventional Commits, Redux version : a smaller set of types and a few extra one
 ## Format
 
 ```
-[type]: {optional scope}: [content]
+[type]: {optional scope}: **C**ontent
 ```
 
 - `type` is always required.
 - The scope is optional and gives extra context (a module, a sub-branch, a ticket...).
-- `content` is a short description of the change.
+- `Content` is a short description of the change. Is also always capitalized
 
 ## Regular types
 
@@ -29,6 +29,14 @@ Always prefix a merge with `mg`, such as : <br>
 
 ```
 mg: Merge tracking branch 'origin/feat/login' into feat/login`
+```
+
+## Revert
+
+Same as the merge but with `revert` as prefix, such as <br>
+
+```
+revert: Revert ...
 ```
 
 ## Rebase
