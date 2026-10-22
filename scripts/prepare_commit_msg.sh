@@ -13,7 +13,7 @@ case "$first" in
         new="revert: $inner"
         ;;
     *)
-        exit0
+        exit 0
         ;;
 esac
 
