@@ -23,5 +23,5 @@ projects: []
 
 ## Environment (Context)
 - OS:
-- Platform
-- Browser
+- Platform:
+- Browser:
