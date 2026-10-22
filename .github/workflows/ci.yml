@@ -51,7 +51,7 @@ jobs:
                     cache: pnpm
                     cache-dependency-path: src/pnpm-lock.yaml
             -   run: pnpm install --frozen-lockfile
-            -   run: pnpm exec tsc --noEmit
+            -   run: pnpm typecheck
     
     build:
         name: Build
