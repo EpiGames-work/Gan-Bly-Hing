@@ -1,0 +1,28 @@
+pre-commit:
+    parallel: true
+    commands:
+        biome:
+            root: "src/"
+            glob: "*.{js,jsx,ts,tsx,json,jsonc,css}"
+            run:  pnpm exec biome check --write --no-errors-on-unmatched \
+                  --files-ignore-unknown=true {staged_files}
+            stage_fixed:  true
+
+pre-push:
+    commands:
+        typecheck:
+            root: "src/"
+            run:  pnpm exec tsc --noemit
+        build:
+            root: "src/"
+            run:  pnpm build
+
+commit-msg:
+    commands:
+        convention:
+            run: sh scripts/check_commit_msg.sh {1}
+
+prepare-commit-msg:
+    commands:
+        rewrite:
+            run: sh scripts/prepare_commit_msg.sh {1}
