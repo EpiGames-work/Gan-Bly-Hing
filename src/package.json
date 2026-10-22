@@ -1,30 +1,43 @@
 {
-  "name": "gan-bly-hing",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "biome check",
-    "format": "biome format --write",
-    "check": "biome check --write",
-    "prepare": "lefthook install"
-  },
-  "dependencies": {
-    "next": "16.4.2",
-    "react": "19.3.0",
-    "react-dom": "19.3.0"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "2.4.2",
-    "@tailwindcss/turbopack": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "lefthook": "^2.2.2",
-    "tailwindcss": "^4",
-    "typescript": "^5"
-  },
-  "packageManager": "pnpm@12.1.0"
+    "name": "gan-bly-hing",
+    "type": "module",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev -p 1999",
+        "dev:full": "(pnpm install && pnpm db && pnpm orm && pnpm dev)",
+        "dev:full:no-migration": "pnpm install && pnpm dev && pnpm orm:push && pnpm dev",
+        "db": "(docker compose up -d db && docker compose ps) || (cd .. && docker-compose up -d db && docker-compose ps && cd src)",
+        "orm": "(pnpm contract:emit && pnpm exec prisma db migrate --yes) || echo 'If no migrations yet, try orm:push'",
+        "orm:push": "pnpm contract:emit && pnpm exec prisma db update",
+        "orm:update": "pnpm contract:emit && pnpm exec prisma migration plan --name",
+        "build": "next build",
+        "start": "next start",
+        "lint": "biome check",
+        "format": "biome format --write",
+        "check": "biome check --write",
+        "prepare": "lefthook install",
+        "contract:emit": "prisma contract emit"
+    },
+    "dependencies": {
+        "@prisma/orm-postgres": "8.0.0-rc.18",
+        "dotenv": "^18.0.8",
+        "next": "16.4.2",
+        "react": "19.3.0",
+        "react-dom": "19.3.0"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "2.4.2",
+        "@prisma/cli-engine": "0.9.0",
+        "@tailwindcss/turbopack": "^4",
+        "@types/node": "^22.0.0",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "lefthook": "^2.2.2",
+        "prisma": "8.0.0-rc.24",
+        "tailwindcss": "^4",
+        "tsx": "^4.23.15",
+        "typescript": "^5"
+    },
+    "packageManager": "pnpm@12.1.0"
 }
