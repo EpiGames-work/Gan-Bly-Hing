@@ -1,0 +1,46 @@
+name: Hygiene
+
+on:
+    pull_request:
+
+concurrency:
+    group: hygiene-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+jobs:
+    commits:
+        name: Commit convention
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - name: Check commit subjects
+              env:
+                  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+                  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+              run: |
+                  status=0
+                  for sha in $(git rev-list --no-merges "$BASE_SHA..$HEAD_SHA"); do
+                      git log -1 --format=%B "$sha" > /tmp/msg
+                      if ! sh scripts/check_commit_msg.sh /tmp/msg 2>/tmp/err; then
+                          echo "::error::Commit $(git rev-parse --short "$sha") does not follow docs/COMMIT_CONVENTION.md: $(git log -1 --format=%s "$sha")"
+                          status=1
+                      fi
+                  done
+                  exit $status
+
+    conflict_markers:
+        name: No conflict markers
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Look for leftover merge conflict markers
+              run: |
+                  if git grep -nE '^(<<<<<<< |>>>>>>> |=======$)' -- . ':!*.md' ':!pnpm-lock.yaml'; then
+                      echo "::error::Unresolved merge conflict markers found"
+                      exit 1
+                  fi
