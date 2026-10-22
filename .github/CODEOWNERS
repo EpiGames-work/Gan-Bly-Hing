@@ -1,0 +1,8 @@
+# Placeholder - uncomment and adjust once areas are assigned.
+# Only enforced if "Require review from Code Owners" is enabled in branch protection.
+#
+# Default owner for everything:
+*               @Lectleex
+#
+# By area:
+/.github/       @Lectleex
