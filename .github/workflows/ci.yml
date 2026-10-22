@@ -1,0 +1,96 @@
+name: CI
+
+on:
+    pull_request:
+    push:
+        branches: [main, dev]
+
+concurrency:
+    group: ci-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+defaults:
+    run:
+        working-directory: src
+
+env:
+    # Dummy url
+    DATABASE_URL: postgresql://ganblyhing:ganblyhing@localhost:5432/ganblyhing
+
+jobs:
+    lint:
+        name: Lint & format
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v4
+            -   uses: pnpm/action-setup@v4
+                with:
+                    package_json_file: src/package.json
+            -   uses: actions/setup-node@v4
+                with:
+                    node-version: 22
+                    cache: pnpm
+                    cache-dependency-path: src/pnpm-lock.yaml
+            -   run: pnpm install --frozen-lockfile
+            -   run: pnpm lint
+    
+    typecheck:
+        name: Typecheck
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v4
+            -   uses: pnpm/action-setup@v4
+                with:
+                    package_json_file: src/package.json
+            -   uses: actions/setup-node@v4
+                with:
+                    node-version: 22
+                    cache: pnpm
+                    cache-dependency-path: src/pnpm-lock.yaml
+            -   run: pnpm install --frozen-lockfile
+            -   run: pnpm exec tsc --noEmit
+    
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        needs: [lint, typecheck]
+        steps:
+            -   uses: actions/checkout@v4
+            -   uses: pnpm/action-setup@v4
+                with:
+                    package_json_file: src/package.json
+            -   uses: actions/setup-node@v4
+                with:
+                    node-version: 22
+                    cache: pnpm
+                    cache-dependency-path: src/pnpm-lock.yaml
+            -   uses: actions/cache@v4
+                with:
+                    path: src/.next/cache
+                    key: nextjs-${{ runner.os }}-${{ hashFiles('src/pnpm-lock.yaml') }}-${{ hashFiles('src/**/*.ts', 'src/**/*.tsx') }}
+                    restore-keys: |
+                        nextjs-${{ runner.os }}-${{ hashFiles('src/pnpm-lock.yaml') }}-
+            -   run: pnpm install --frozen-lockfile
+            -   run: pnpm build
+    
+    contract:
+        name: Prisma contract up to date
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v4
+            -   uses: pnpm/action-setup@v4
+                with:
+                    package_json_file: src/package.json
+            -   uses: actions/setup-node@v4
+                with:
+                    node-version: 22
+                    cache: pnpm
+                    cache-dependency-path: src/pnpm-lock.yaml
+            -   run: pnpm install --frozen-lockfile
+            -   run: pnpm contract:emit
+            -   name: Check for drift
+                working-directory: .
+                run: git diff --exit-code -- src/prisma
