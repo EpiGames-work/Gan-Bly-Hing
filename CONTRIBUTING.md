@@ -28,7 +28,12 @@ For context anything with a `?` at the end is optional
 
 | Check | Catches | Blocks? |
 | - | - | - |
-| Lint & format | Style issues | Yes |
+| Lint & format | Style issues (`biome check`) | Yes |
+| Typecheck | Type errors (`tsc --noEmit`) | Yes |
+| Build | Broken `next build` | Yes |
+| Prisma contract | `contract.prisma` changed without `pnpm contract:emit` | Yes |
+| Commit convention | Commit subjects not matching `docs/COMMIT_CONVENTION.md` | Yes |
+| Conflict markers | Leftover `<<<<<<<` / `>>>>>>>` | Yes |
 
 ## Troubleshooting
 
