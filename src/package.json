@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "next dev -p 1999",
         "dev:full": "(pnpm install && pnpm db && pnpm orm && pnpm dev)",
-        "dev:full:no-migration": "pnpm install && pnpm dev && pnpm orm:push && pnpm dev",
+        "dev:full:no-migration": "pnpm install && pnpm db && pnpm orm:push && pnpm dev",
         "db": "(docker compose up -d db && docker compose ps) || (cd .. && docker-compose up -d db && docker-compose ps && cd src)",
         "orm": "(pnpm contract:emit && pnpm exec prisma db migrate --yes) || echo 'If no migrations yet, try orm:push'",
         "orm:push": "pnpm contract:emit && pnpm exec prisma db update",

@@ -2,7 +2,7 @@
 # Only enforced if "Require review from Code Owners" is enabled in branch protection.
 #
 # Default owner for everything:
-*               @Lectleex
+#*               @Lectleex
 #
 # By area:
 /.github/       @Lectleex

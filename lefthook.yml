@@ -11,7 +11,7 @@ pre-push:
     commands:
         typecheck:
             root: "src/"
-            run:  pnpm exec tsc --noemit
+            run:  pnpm typecheck
         build:
             root: "src/"
             run:  pnpm build

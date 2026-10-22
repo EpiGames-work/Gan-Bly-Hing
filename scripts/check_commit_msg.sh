@@ -31,6 +31,6 @@ Examples:
     mg: Merge tracking branch 'origin/feat/login' into feat/login
 
 EOF
-    printf 'Got: $s\n\n' "$subject" >&2
+    printf 'Got: %s\n\n' "$subject" >&2
     exit 1
 fi

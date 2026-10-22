@@ -18,4 +18,4 @@ case "$first" in
 esac
 
 { printf '%s\n' "$new"; tail -n +2 "$msg_file"; } > "$msg_file.tmp" \
-    && mb "$msg_file.tmp" "$msg_file"
+    && mv "$msg_file.tmp" "$msg_file"
