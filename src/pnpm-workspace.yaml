@@ -10,3 +10,5 @@ minimumReleaseAgeExclude:
   - '@prisma/orm-postgres@8.0.0-rc.20'
   - '@prisma/orm-target-postgres@8.0.0-rc.20'
   - '@prisma/orm-toolchain@8.0.0-rc.20'
+overrides:
+  "prisma>@prisma/orm-toolchain": 8.0.0-rc.20

@@ -20,7 +20,7 @@
         "contract:emit": "prisma contract emit"
     },
     "dependencies": {
-        "@prisma/orm-postgres": "8.0.0-rc.18",
+        "@prisma/orm-postgres": "8.0.0-rc.20",
         "dotenv": "^18.0.8",
         "next": "16.4.2",
         "react": "19.3.0",
