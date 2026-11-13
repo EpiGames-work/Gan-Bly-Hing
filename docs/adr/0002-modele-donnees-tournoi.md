@@ -37,6 +37,15 @@ La base sera relationnelle, avec Prisma comme source de vérité du schéma.
 Le schéma ci-dessous est un premier modèle métier qui peut être modifié dans le futur :
 
 ```prisma
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
 enum UserRole {
   ADMIN
   PLAYER
@@ -61,17 +70,26 @@ enum MatchStatus {
 }
 
 model User {
-  @id       Int      @default(autoincrement())
-  email     String   @unique
-  username  String   @unique
-  name      String?
-  role      UserRole @default(SPECTATOR)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                 String   @id @default(cuid())
+  email              String   @unique
+  username           String   @unique
+  role               UserRole @default(SPECTATOR)
+  passwordHash       String
+  confirmed          Boolean  @default(false)
+  deletionScheduledAt DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   tournaments Tournament[]
   teams       TeamMember[]
   predictions Prediction[]
+  sessions           Session[]
+  serviceConnections ServiceConnection[]
+  widgets            Widget[]
+  verificationToken  VerificationToken[]
+
+  @@index([deletionScheduledAt])
+}
 }
 
 model Game {
@@ -174,6 +192,65 @@ model Prediction {
   createdAt DateTime @default(now())
 
   @@unique([userId, matchId])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+enum ServiceProvider {
+  DISCORD
+  GOOGLE
+  STEAM
+  TWITCH
+}
+
+model ServiceConnection {
+  id                String          @id @default(cuid())
+  provider          ServiceProvider
+  userId            String
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  providerAccountId String
+  displayName       String?
+  avatarUrl         String?
+  accessToken       String?
+  refreshToken      String?
+  expiresAt         DateTime?
+  scope             String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@unique([userId, provider])
+}
+
+model VerificationToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Widget {
+  id              String
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type            String
+  title           String
+  refreshInterval Int
+  config          Json     @default("{}")
+  position        Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@id([userId, id])
+  @@index([userId, position])
 }
 
 model PickEmQuestion {
