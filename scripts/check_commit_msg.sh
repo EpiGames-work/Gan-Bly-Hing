@@ -6,7 +6,7 @@ subject=$(grep -v '^#' "$msg_file" | head -n1)
 types='feat|fix|style|chore|devops'
 scope='[A-Za-z0-9._/#-]+'
 
-pattern="((mg|pr|revert): .+|(rebase: )?($types)(: $scope)?: [A-Z].*)$"
+pattern="^((mg|pr|revert): .+|(rebase: )?($types)(: $scope)?: [A-Z].*)$"
 
 if ! printf '%s\n' "$subject" | grep -Eq "$pattern"; then
     cat >&2 <<'EOF'
