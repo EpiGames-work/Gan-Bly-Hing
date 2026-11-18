@@ -32,7 +32,7 @@ Nous allons structurer le modèle de données autour de domaines métier distinc
 
 La base sera relationnelle, avec Prisma comme source de vérité du schéma.
 
-## Modèle cible (première idée)
+## Modèle cible (deuxième idée)
 
 Le schéma ci-dessous est un premier modèle métier qui peut être modifié dans le futur :
 
@@ -84,12 +84,9 @@ model User {
   teams       TeamMember[]
   predictions Prediction[]
   sessions           Session[]
-  serviceConnections ServiceConnection[]
-  widgets            Widget[]
   verificationToken  VerificationToken[]
 
   @@index([deletionScheduledAt])
-}
 }
 
 model Game {
@@ -130,7 +127,7 @@ model Team {
 
   members     TeamMember[]
   homeMatches Match[]    @relation("HomeTeam")
-  awayMatches Match[]    @relation("AwayTeam")
+  onlineMatches Match[]    @relation("OnlineTeam")
 }
 
 model TeamMember {
@@ -164,8 +161,8 @@ model Match {
 
   homeTeam    Team        @relation("HomeTeam", fields: [homeTeamId], references: [id])
   homeTeamId  String
-  awayTeam    Team        @relation("AwayTeam", fields: [awayTeamId], references: [id])
-  awayTeamId  String
+  onlineTeam    Team        @relation("OnlineTeam", fields: [onlineTeamId], references: [id])
+  onlineTeamId  String
 
   result      MatchResult?
   predictions Prediction[]
@@ -176,7 +173,7 @@ model MatchResult {
   match       Match    @relation(fields: [matchId], references: [id])
   matchId     String   @unique
   homeScore   Int?
-  awayScore   Int?
+  onlineScore   Int?
   winnerTeamId String?
   notes       String?
 }
@@ -188,7 +185,7 @@ model Prediction {
   match     Match    @relation(fields: [matchId], references: [id])
   matchId   String
   homeScore Int?
-  awayScore Int?
+  onlineScore Int?
   createdAt DateTime @default(now())
 
   @@unique([userId, matchId])
@@ -203,31 +200,6 @@ model Session {
   createdAt DateTime @default(now())
 }
 
-enum ServiceProvider {
-  DISCORD
-  GOOGLE
-  STEAM
-  TWITCH
-}
-
-model ServiceConnection {
-  id                String          @id @default(cuid())
-  provider          ServiceProvider
-  userId            String
-  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  providerAccountId String
-  displayName       String?
-  avatarUrl         String?
-  accessToken       String?
-  refreshToken      String?
-  expiresAt         DateTime?
-  scope             String?
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-
-  @@unique([userId, provider])
-}
-
 model VerificationToken {
   id        String   @id @default(cuid())
   token     String   @unique
@@ -235,22 +207,6 @@ model VerificationToken {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
   createdAt DateTime @default(now())
-}
-
-model Widget {
-  id              String
-  userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type            String
-  title           String
-  refreshInterval Int
-  config          Json     @default("{}")
-  position        Int
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  @@id([userId, id])
-  @@index([userId, position])
 }
 
 model PickEmQuestion {
